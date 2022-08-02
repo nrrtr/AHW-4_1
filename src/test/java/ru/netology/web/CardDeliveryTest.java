@@ -3,6 +3,7 @@ package ru.netology.web;
 import com.codeborne.selenide.Condition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 
 import java.time.Duration;
@@ -108,7 +109,7 @@ public class CardDeliveryTest {
     //wrong suite
 
     @Test
-    void shouldShowWrongCityMessage(){
+    void shouldShowWrongCityMessage() {
         $x("//input[@placeholder='Город']").setValue("Норильск");
         $x("//*[@placeholder='Дата встречи']").doubleClick();
         $x("//*[@placeholder='Дата встречи']").sendKeys(Keys.BACK_SPACE);
@@ -163,5 +164,48 @@ public class CardDeliveryTest {
         $$("[class='input__sub']").get(3).shouldBe(visible);
         $$("[class='input__sub']").get(3).shouldHave(
                 exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
+    }
+
+    //лепим костыли хД
+    private int rng = (int) Math.random() * 15;
+    LocalDate currentDate = LocalDate.now();
+    LocalDate datePlusWeek = LocalDate.now().plusWeeks(1);
+    private String day = String.valueOf(datePlusWeek.getDayOfMonth());
+
+    @Test
+    void shouldPassValidationWithPopupCitiesListAndCalendarWidget() {
+        $x("//input[@placeholder='Город']").setValue("Кр");
+        $$(".menu-item__control").get(rng).click();
+        $x("//*[@id='root']/div/form/fieldset/div[2]/span/span/span/span/span[1]/span/button").click();
+        if (datePlusWeek.getMonthValue() > currentDate.getMonthValue()) {
+            $x("//*[@class='calendar__arrow calendar__arrow_direction_right']").click();
+        }
+        $$("td.calendar__day").find(exactText(day)).click();
+        $x("//input[@name='name']").setValue("Дмитрий Мамин-Сибиряк");
+        $x("//input[@name='phone']").setValue("+79012345678");
+        $x("//span[@class='checkbox__box']").click();
+        $x("//button[@class='button button_view_extra button_size_m button_theme_alfa-on-white']").click();
+        $x("//*[@data-test-id='notification']").shouldBe(visible, Duration.ofSeconds(15));
+        $x("//*[@data-test-id='notification']").should(Condition.matchText("Успешно!"));
+    }
+
+    LocalDate datePlusMonth = LocalDate.now().plusMonths(1);
+    private String day2 = String.valueOf(datePlusMonth.getDayOfMonth());
+
+    @Test
+    void shouldPassValidationWithPopupCitiesListAndCalendarWidget2() {
+        $x("//input[@placeholder='Город']").setValue("Кр");
+        $$(".menu-item__control").get(rng).click();
+        $x("//*[@id='root']/div/form/fieldset/div[2]/span/span/span/span/span[1]/span/button").click();
+        if (datePlusMonth.getMonthValue() > currentDate.getMonthValue()) {
+            $x("//*[@class='calendar__arrow calendar__arrow_direction_right']").click();
+        }
+        $$("td.calendar__day").find(exactText(day2)).click();
+        $x("//input[@name='name']").setValue("Дмитрий Мамин-Сибиряк");
+        $x("//input[@name='phone']").setValue("+79012345678");
+        $x("//span[@class='checkbox__box']").click();
+        $x("//button[@class='button button_view_extra button_size_m button_theme_alfa-on-white']").click();
+        $x("//*[@data-test-id='notification']").shouldBe(visible, Duration.ofSeconds(15));
+        $x("//*[@data-test-id='notification']").should(Condition.matchText("Успешно!"));
     }
 }
