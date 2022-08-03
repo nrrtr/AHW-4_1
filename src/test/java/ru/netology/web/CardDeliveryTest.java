@@ -170,7 +170,7 @@ public class CardDeliveryTest {
         int i = 7;
         String day = String.valueOf(LocalDate.now().plusDays(i).getDayOfMonth());
         $x("//input[@placeholder='Город']").setValue("Кр");
-        $$(".menu-item__control").get(random.nextInt(15)).click();
+        $$(".menu-item__control").get(random.nextInt(14)).click();
         $x("//*[@id='root']/div/form/fieldset/div[2]/span/span/span/span/span[1]/span/button").click();
         if (LocalDate.now().plusDays(i).getMonthValue() > LocalDate.now().plusDays(3).getMonthValue()) {
             $x("//*[@class='calendar__arrow calendar__arrow_direction_right']").click();
